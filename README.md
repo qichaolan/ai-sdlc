@@ -10,6 +10,7 @@ Agent skills for the Python development lifecycle, for use with Claude Code, Cod
 | [python-development](python-development/SKILL.md) | Implementing, fixing, or refactoring code |
 | [python-testing](python-testing/SKILL.md) | Writing, running, or debugging pytest tests with coverage |
 | [python-code-review](python-code-review/SKILL.md) | Reviewing code, diffs, or pull requests |
+| [python-release](python-release/SKILL.md) | Releasing a reviewed project to GKE or Cloud Run functions with gated, human-approved deploys |
 
 ## Installation
 
