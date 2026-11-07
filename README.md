@@ -2,7 +2,11 @@
 
 Agent skills for the software development lifecycle (Python development, design review, documentation, and spec-driven changes), for use with Claude Code, Codex, and similar coding agents.
 
-## Skills
+The skills fall into three groups. Within a group they are meant to be used in order, but each one also works on its own.
+
+## Python development
+
+Setup, build, test, review, and ship a Python project.
 
 | Skill | Use it when |
 | --- | --- |
@@ -11,12 +15,26 @@ Agent skills for the software development lifecycle (Python development, design 
 | [python-testing](python-testing/SKILL.md) | Writing, running, or debugging pytest tests with coverage |
 | [python-code-review](python-code-review/SKILL.md) | Reviewing code, diffs, or pull requests |
 | [python-release](python-release/SKILL.md) | Releasing a reviewed project to GKE or Cloud Run functions with gated, human-approved deploys |
-| [design-review-web-ux](design-review-web-ux/SKILL.md) | Auditing or designing web UX: accessibility, responsive behavior, flows, forms, dashboards |
-| [tech-doc-writer-reviewer](tech-doc-writer-reviewer/SKILL.md) | Writing or reviewing READMEs, guides, API references, design docs, runbooks, release notes |
-| [openspec-explore](openspec-explore/SKILL.md) | Thinking through ideas or requirements before proposing a change (requires the openspec CLI) |
+
+## Spec-driven changes (OpenSpec)
+
+Plan a change as written specs, implement it, then archive it. These skills require the [openspec](https://github.com/Fission-AI/OpenSpec) CLI.
+
+| Skill | Use it when |
+| --- | --- |
+| [openspec-explore](openspec-explore/SKILL.md) | Thinking through ideas or requirements before proposing a change |
 | [openspec-propose](openspec-propose/SKILL.md) | Generating a full change proposal: design, specs, and tasks |
 | [openspec-apply-change](openspec-apply-change/SKILL.md) | Implementing the tasks of an OpenSpec change |
 | [openspec-archive-change](openspec-archive-change/SKILL.md) | Archiving a completed change |
+
+## Design and documentation
+
+Standalone skills for UX and docs work. They can be used at any point in the lifecycle.
+
+| Skill | Use it when |
+| --- | --- |
+| [design-review-web-ux](design-review-web-ux/SKILL.md) | Auditing or designing web UX: accessibility, responsive behavior, flows, forms, dashboards |
+| [tech-doc-writer-reviewer](tech-doc-writer-reviewer/SKILL.md) | Writing or reviewing READMEs, guides, API references, design docs, runbooks, release notes |
 
 ## Installation
 
