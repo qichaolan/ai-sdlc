@@ -257,7 +257,7 @@ footer p { margin: 0; }
       <div class="code"><pre data-name="Download and copy commands"><code>git clone https://github.com/qichaolan/ai-sdlc.git
 cd ai-sdlc
 mkdir -p ~/.claude/skills
-cp -r python-* web-app-security-review backend-security-review-gcp-docker design-review-web-ux tech-doc-writer-reviewer openspec-* session-memory~/.claude/skills/</code></pre></div>
+cp -r python-* web-app-security-review backend-security-review-gcp-docker design-review-web-ux tech-doc-writer-reviewer openspec-* session-memory ~/.claude/skills/</code></pre></div>
     </li>
     <li>
       <p>Make a practice folder and start Claude Code in it:</p>
@@ -314,11 +314,11 @@ cd ai-sdlc</code></pre></div>
       <p>Copy the skills into one project, or into your user folder to use them everywhere:</p>
       <div class="code"><pre data-name="Copy commands"><code><span class="c"># One project</span>
 mkdir -p /path/to/project/.claude/skills
-cp -r python-* web-app-security-review backend-security-review-gcp-docker design-review-web-ux tech-doc-writer-reviewer openspec-* session-memory/path/to/project/.claude/skills/
+cp -r python-* web-app-security-review backend-security-review-gcp-docker design-review-web-ux tech-doc-writer-reviewer openspec-* session-memory /path/to/project/.claude/skills/
 
 <span class="c"># Every project</span>
 mkdir -p ~/.claude/skills
-cp -r python-* web-app-security-review backend-security-review-gcp-docker design-review-web-ux tech-doc-writer-reviewer openspec-* session-memory~/.claude/skills/</code></pre></div>
+cp -r python-* web-app-security-review backend-security-review-gcp-docker design-review-web-ux tech-doc-writer-reviewer openspec-* session-memory ~/.claude/skills/</code></pre></div>
       <p>If a skill folder already exists, <code>cp -r</code> overwrites its files, including any local edits, but keeps files that no longer exist in this repo. To update cleanly, see <a href="#updating">Updating</a>.</p>
     </li>
     <li>
@@ -445,7 +445,7 @@ cp -r python-* web-app-security-review backend-security-review-gcp-docker design
       <p>Pull the repo, delete the old skill folders, and copy them again:</p>
       <div class="code"><pre data-name="Update commands"><code>cd ai-sdlc &amp;&amp; git pull
 rm -rf /path/to/project/.claude/skills/{python-*,web-app-security-review,backend-security-review-gcp-docker,design-review-web-ux,tech-doc-writer-reviewer,openspec-*,session-memory}
-cp -r python-* web-app-security-review backend-security-review-gcp-docker design-review-web-ux tech-doc-writer-reviewer openspec-* session-memory/path/to/project/.claude/skills/</code></pre></div>
+cp -r python-* web-app-security-review backend-security-review-gcp-docker design-review-web-ux tech-doc-writer-reviewer openspec-* session-memory /path/to/project/.claude/skills/</code></pre></div>
       <p>Deleting first removes files that no longer exist in this repo. Use <code>~/.claude/skills</code> instead of the project path if you installed for every project.</p>
     </li>
   </ol>
