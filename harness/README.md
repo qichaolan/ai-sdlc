@@ -36,7 +36,7 @@ calls stay in the skills.
    cp -r "$AI_SDLC"/harness/{AGENTS.md,CLAUDE.md,scripts,.claude,.github,.devcontainer} .
    cp -r "$AI_SDLC"/harness/openspec .    # only if you use OpenSpec
    mkdir -p .claude/skills
-   cp -r "$AI_SDLC"/{python-*,design-review-web-ux,tech-doc-writer-reviewer,openspec-*,session-memory} .claude/skills/
+   cp -r "$AI_SDLC"/{python-*,web-app-security-review,backend-security-review-gcp-docker,design-review-web-ux,tech-doc-writer-reviewer,openspec-*,session-memory} .claude/skills/
    ```
 
    This overwrites files with the same names. Merge by hand if the
@@ -96,6 +96,9 @@ calls stay in the skills.
   `openspec-archive-change` → `python-release`.
 - **Bug fix or refactor:** `python-development` and `python-testing`,
   then `python-code-review`.
+- **Security:** `web-app-security-review` and
+  `backend-security-review-gcp-docker` before a launch or after a
+  security-sensitive change.
 - **Docs and UX:** `tech-doc-writer-reviewer` and
   `design-review-web-ux` before the review.
 - **Every session:** `session-memory` at the start and end. The hook

@@ -213,6 +213,7 @@ footer p { margin: 0; }
         <li><a href="#python-development">Python development</a></li>
         <li><a href="#spec-driven-changes">Spec-driven changes</a></li>
         <li><a href="#design-and-documentation">Design and documentation</a></li>
+        <li><a href="#security-review">Security review</a></li>
         <li><a href="#session-management">Session management</a></li>
       </ul>
     </li>
@@ -224,8 +225,8 @@ footer p { margin: 0; }
 <main id="content">
 <header>
   <h1>ai-sdlc</h1>
-  <p class="lead">Agent skills and a project harness for running the software development lifecycle with coding agents such as Claude Code and Codex. The skills cover Python development, spec-driven changes, design review, documentation, and session memory. The harness makes agents follow the same workflow, checks, and approval gates in every repo.</p>
-  <p class="note"><strong>What it isn’t:</strong> a framework or a program you run. Everything here is Markdown instructions and configuration files that you copy into a project. The Python skills target uv, Ruff, mypy, pytest, GitHub Actions, and Google Cloud; the design, docs, OpenSpec, and session skills work with any stack.</p>
+  <p class="lead">Agent skills and a project harness for running the software development lifecycle with coding agents such as Claude Code and Codex. The skills cover Python development, spec-driven changes, security review, design review, documentation, and session memory. The harness makes agents follow the same workflow, checks, and approval gates in every repo.</p>
+  <p class="note"><strong>What it isn’t:</strong> a framework or a program you run. Everything here is Markdown instructions and configuration files that you copy into a project. The Python skills target uv, Ruff, mypy, pytest, GitHub Actions, and Google Cloud, and the backend security skill targets Google Cloud and Docker; the web security, design, docs, OpenSpec, and session skills work with any stack.</p>
   <p class="source"><a href="https://github.com/qichaolan/ai-sdlc">View the repo on GitHub</a></p>
 </header>
 
@@ -256,7 +257,7 @@ footer p { margin: 0; }
       <div class="code"><pre data-name="Download and copy commands"><code>git clone https://github.com/qichaolan/ai-sdlc.git
 cd ai-sdlc
 mkdir -p ~/.claude/skills
-cp -r python-* design-review-web-ux tech-doc-writer-reviewer openspec-* session-memory ~/.claude/skills/</code></pre></div>
+cp -r python-* web-app-security-review backend-security-review-gcp-docker design-review-web-ux tech-doc-writer-reviewer openspec-* session-memory~/.claude/skills/</code></pre></div>
     </li>
     <li>
       <p>Make a practice folder and start Claude Code in it:</p>
@@ -313,11 +314,11 @@ cd ai-sdlc</code></pre></div>
       <p>Copy the skills into one project, or into your user folder to use them everywhere:</p>
       <div class="code"><pre data-name="Copy commands"><code><span class="c"># One project</span>
 mkdir -p /path/to/project/.claude/skills
-cp -r python-* design-review-web-ux tech-doc-writer-reviewer openspec-* session-memory /path/to/project/.claude/skills/
+cp -r python-* web-app-security-review backend-security-review-gcp-docker design-review-web-ux tech-doc-writer-reviewer openspec-* session-memory/path/to/project/.claude/skills/
 
 <span class="c"># Every project</span>
 mkdir -p ~/.claude/skills
-cp -r python-* design-review-web-ux tech-doc-writer-reviewer openspec-* session-memory ~/.claude/skills/</code></pre></div>
+cp -r python-* web-app-security-review backend-security-review-gcp-docker design-review-web-ux tech-doc-writer-reviewer openspec-* session-memory~/.claude/skills/</code></pre></div>
       <p>If a skill folder already exists, <code>cp -r</code> overwrites its files, including any local edits, but keeps files that no longer exist in this repo. To update cleanly, see <a href="#updating">Updating</a>.</p>
     </li>
     <li>
@@ -350,6 +351,7 @@ cp -r python-* design-review-web-ux tech-doc-writer-reviewer openspec-* session-
       <tr><th scope="row">New feature or behavior change</th><td><code>openspec-explore</code> → <code>openspec-propose</code> → <code>openspec-apply-change</code> (uses <code>python-development</code> and <code>python-testing</code>) → <code>python-code-review</code> → <code>openspec-archive-change</code></td><td>Approve the proposal before implementation starts; review the PR</td></tr>
       <tr><th scope="row">Bug fix or refactor</th><td><code>python-development</code> → <code>python-testing</code> → <code>python-code-review</code></td><td>Review the PR</td></tr>
       <tr><th scope="row">Release</th><td><code>python-release</code></td><td>Approve each deploy</td></tr>
+      <tr><th scope="row">Security review, such as before a launch</th><td><code>web-app-security-review</code>, <code>backend-security-review-gcp-docker</code></td><td>Decide what to fix; settle anything marked for verification</td></tr>
       <tr><th scope="row">Docs or UX change</th><td><code>tech-doc-writer-reviewer</code>, <code>design-review-web-ux</code></td><td>Review the findings</td></tr>
       <tr><th scope="row">Any session</th><td><code>session-memory</code> at the start and end</td><td>Read the handoff in <code>docs/PROGRESS.md</code> when you return</td></tr>
     </tbody>
@@ -364,7 +366,7 @@ cp -r python-* design-review-web-ux tech-doc-writer-reviewer openspec-* session-
 
 <section>
   <h2 id="skill-catalog">Skill catalog</h2>
-  <p>The skills fall into four groups. Within a group they are meant to be used in order, but each one also works on its own.</p>
+  <p>The skills fall into five groups. Within a group they are meant to be used in order, but each one also works on its own.</p>
 
   <h3 id="python-development">Python development</h3>
   <p>Set up, build, test, review, and ship a Python project.</p>
@@ -401,6 +403,16 @@ cp -r python-* design-review-web-ux tech-doc-writer-reviewer openspec-* session-
     </tbody>
   </table>
 
+  <h3 id="security-review">Security review</h3>
+  <p>Standalone reviews that look for exploitable weaknesses and report them without changing production resources. Use one or both for a dedicated security pass, such as before a launch or after a security-sensitive change. <code>python-code-review</code> still handles routine review of a diff.</p>
+  <table class="skills">
+    <thead><tr><th scope="col">Skill</th><th scope="col">Use it when</th></tr></thead>
+    <tbody>
+      <tr><th scope="row"><a class="skill" href="https://github.com/qichaolan/ai-sdlc/blob/main/web-app-security-review/SKILL.md">web-app-security-review</a></th><td>Checking a web app: login and sessions, access control, XSS, CSRF and CORS, data exposure, browser protections, critical workflows</td></tr>
+      <tr><th scope="row"><a class="skill" href="https://github.com/qichaolan/ai-sdlc/blob/main/backend-security-review-gcp-docker/SKILL.md">backend-security-review-gcp-docker</a></th><td>Checking a backend on Google Cloud and Docker: authentication, tenant isolation, injection and SSRF, secrets and IAM, network exposure, containers and pipelines, abuse protection</td></tr>
+    </tbody>
+  </table>
+
   <h3 id="session-management">Session management</h3>
   <p>Keeps work resumable across sessions and agents through a handoff file and the project’s own docs. Skills load only when an agent matches them to the task, so add the <a href="https://github.com/qichaolan/ai-sdlc/blob/main/session-memory/references/agents-snippet.md">AGENTS.md snippet</a> (already in the harness template) to make agents use this one at the start and end of every session.</p>
   <table class="skills">
@@ -416,6 +428,7 @@ cp -r python-* design-review-web-ux tech-doc-writer-reviewer openspec-* session-
   <div class="code"><pre class="map" tabindex="0" role="region" aria-label="Repository layout"><code>ai-sdlc/
 ├── python-*/                  <span class="c"># Python lifecycle skills</span>
 ├── openspec-*/                <span class="c"># spec-driven change skills</span>
+├── *-security-review*/        <span class="c"># web and backend security review skills</span>
 ├── design-review-web-ux/      <span class="c"># UX review skill, with reference files</span>
 ├── tech-doc-writer-reviewer/  <span class="c"># documentation skill</span>
 ├── session-memory/            <span class="c"># session handoff skill, with templates</span>
@@ -431,8 +444,8 @@ cp -r python-* design-review-web-ux tech-doc-writer-reviewer openspec-* session-
     <li>
       <p>Pull the repo, delete the old skill folders, and copy them again:</p>
       <div class="code"><pre data-name="Update commands"><code>cd ai-sdlc &amp;&amp; git pull
-rm -rf /path/to/project/.claude/skills/{python-*,design-review-web-ux,tech-doc-writer-reviewer,openspec-*,session-memory}
-cp -r python-* design-review-web-ux tech-doc-writer-reviewer openspec-* session-memory /path/to/project/.claude/skills/</code></pre></div>
+rm -rf /path/to/project/.claude/skills/{python-*,web-app-security-review,backend-security-review-gcp-docker,design-review-web-ux,tech-doc-writer-reviewer,openspec-*,session-memory}
+cp -r python-* web-app-security-review backend-security-review-gcp-docker design-review-web-ux tech-doc-writer-reviewer openspec-* session-memory/path/to/project/.claude/skills/</code></pre></div>
       <p>Deleting first removes files that no longer exist in this repo. Use <code>~/.claude/skills</code> instead of the project path if you installed for every project.</p>
     </li>
   </ol>

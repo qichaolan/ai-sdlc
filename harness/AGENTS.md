@@ -50,6 +50,8 @@ The rules in this file override a skill when they conflict.
 | Implementing, fixing, refactoring code | `python-development` |
 | Writing, running, debugging tests and coverage | `python-testing` |
 | Reviewing code, diffs, pull requests | `python-code-review` |
+| Security review of a web app: sessions, access control, XSS, CSRF, CORS | `web-app-security-review` |
+| Security review of a backend on GCP and Docker: auth, tenant isolation, IAM, network, containers | `backend-security-review-gcp-docker` |
 | UX, accessibility, responsive layout | `design-review-web-ux` |
 | Writing, reviewing, updating docs | `tech-doc-writer-reviewer` |
 | Releasing to GKE or Cloud Run functions | `python-release` |

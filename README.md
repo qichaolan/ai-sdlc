@@ -1,8 +1,8 @@
 # ai-sdlc
 
-Agent skills and a project harness for running the software development lifecycle with coding agents such as Claude Code and Codex. The skills cover Python development, spec-driven changes, design review, documentation, and session memory. The harness makes agents follow the same workflow, checks, and approval gates in every repo.
+Agent skills and a project harness for running the software development lifecycle with coding agents such as Claude Code and Codex. The skills cover Python development, spec-driven changes, security review, design review, documentation, and session memory. The harness makes agents follow the same workflow, checks, and approval gates in every repo.
 
-**What it isn't:** a framework or a program you run. Everything here is Markdown instructions and configuration files that you copy into a project. The Python skills target uv, Ruff, mypy, pytest, GitHub Actions, and Google Cloud; the design, docs, OpenSpec, and session skills work with any stack.
+**What it isn't:** a framework or a program you run. Everything here is Markdown instructions and configuration files that you copy into a project. The Python skills target uv, Ruff, mypy, pytest, GitHub Actions, and Google Cloud, and the backend security skill targets Google Cloud and Docker; the web security, design, docs, OpenSpec, and session skills work with any stack.
 
 ## New to coding? Start here
 
@@ -16,7 +16,7 @@ You don't need to know how to code to try this. A coding agent is an AI assistan
    git clone https://github.com/qichaolan/ai-sdlc.git
    cd ai-sdlc
    mkdir -p ~/.claude/skills
-   cp -r python-* design-review-web-ux tech-doc-writer-reviewer openspec-* session-memory ~/.claude/skills/
+   cp -r python-* web-app-security-review backend-security-review-gcp-docker design-review-web-ux tech-doc-writer-reviewer openspec-* session-memory ~/.claude/skills/
    ```
 
 3. Make a practice folder and start Claude Code in it:
@@ -69,11 +69,11 @@ Skills are advice: an agent may skip one or not load it. The harness covers what
    ```bash
    # One project
    mkdir -p /path/to/project/.claude/skills
-   cp -r python-* design-review-web-ux tech-doc-writer-reviewer openspec-* session-memory /path/to/project/.claude/skills/
+   cp -r python-* web-app-security-review backend-security-review-gcp-docker design-review-web-ux tech-doc-writer-reviewer openspec-* session-memory /path/to/project/.claude/skills/
 
    # Every project
    mkdir -p ~/.claude/skills
-   cp -r python-* design-review-web-ux tech-doc-writer-reviewer openspec-* session-memory ~/.claude/skills/
+   cp -r python-* web-app-security-review backend-security-review-gcp-docker design-review-web-ux tech-doc-writer-reviewer openspec-* session-memory ~/.claude/skills/
    ```
 
    If a skill folder already exists, `cp -r` overwrites its files, including any local edits, but keeps files that no longer exist in this repo. To update cleanly, see [Updating](#updating).
@@ -100,6 +100,7 @@ Follow [harness/README.md](harness/README.md). In short:
 | New feature or behavior change | `openspec-explore` → `openspec-propose` → `openspec-apply-change` (uses `python-development` and `python-testing`) → `python-code-review` → `openspec-archive-change` | Approve the proposal before implementation starts; review the PR |
 | Bug fix or refactor | `python-development` → `python-testing` → `python-code-review` | Review the PR |
 | Release | `python-release` | Approve each deploy |
+| Security review, such as before a launch | `web-app-security-review`, `backend-security-review-gcp-docker` | Decide what to fix; settle anything marked for verification |
 | Docs or UX change | `tech-doc-writer-reviewer`, `design-review-web-ux` | Review the findings |
 | Any session | `session-memory` at the start and end | Read the handoff in `docs/PROGRESS.md` when you return |
 
@@ -111,7 +112,7 @@ Tips:
 
 ## Skill catalog
 
-The skills fall into four groups. Within a group they are meant to be used in order, but each one also works on its own.
+The skills fall into five groups. Within a group they are meant to be used in order, but each one also works on its own.
 
 ### Python development
 
@@ -145,6 +146,15 @@ Standalone skills for UX and docs work. They can be used at any point in the lif
 | [design-review-web-ux](design-review-web-ux/SKILL.md) | Auditing or designing web UX: accessibility, responsive behavior, flows, forms, dashboards |
 | [tech-doc-writer-reviewer](tech-doc-writer-reviewer/SKILL.md) | Writing or reviewing READMEs, guides, API references, design docs, runbooks, release notes |
 
+### Security review
+
+Standalone reviews that look for exploitable weaknesses and report them without changing production resources. Use one or both for a dedicated security pass, such as before a launch or after a security-sensitive change. `python-code-review` still handles routine review of a diff.
+
+| Skill | Use it when |
+| --- | --- |
+| [web-app-security-review](web-app-security-review/SKILL.md) | Checking a web app: login and sessions, access control, XSS, CSRF and CORS, data exposure, browser protections, critical workflows |
+| [backend-security-review-gcp-docker](backend-security-review-gcp-docker/SKILL.md) | Checking a backend on Google Cloud and Docker: authentication, tenant isolation, injection and SSRF, secrets and IAM, network exposure, containers and pipelines, abuse protection |
+
 ### Session management
 
 Keeps work resumable across sessions and agents through a handoff file and the project's own docs. Skills load only when an agent matches them to the task, so add the [AGENTS.md snippet](session-memory/references/agents-snippet.md) (already in the harness template) to make agents use this one at the start and end of every session.
@@ -159,6 +169,7 @@ Keeps work resumable across sessions and agents through a handoff file and the p
 ai-sdlc/
 ├── python-*/                  # Python lifecycle skills
 ├── openspec-*/                # spec-driven change skills
+├── *-security-review*/        # web and backend security review skills
 ├── design-review-web-ux/      # UX review skill, with reference files
 ├── tech-doc-writer-reviewer/  # documentation skill
 ├── session-memory/            # session handoff skill, with templates
@@ -172,8 +183,8 @@ ai-sdlc/
 
    ```bash
    cd ai-sdlc && git pull
-   rm -rf /path/to/project/.claude/skills/{python-*,design-review-web-ux,tech-doc-writer-reviewer,openspec-*,session-memory}
-   cp -r python-* design-review-web-ux tech-doc-writer-reviewer openspec-* session-memory /path/to/project/.claude/skills/
+   rm -rf /path/to/project/.claude/skills/{python-*,web-app-security-review,backend-security-review-gcp-docker,design-review-web-ux,tech-doc-writer-reviewer,openspec-*,session-memory}
+   cp -r python-* web-app-security-review backend-security-review-gcp-docker design-review-web-ux tech-doc-writer-reviewer openspec-* session-memory /path/to/project/.claude/skills/
    ```
 
    Deleting first removes files that no longer exist in this repo. Use `~/.claude/skills` instead of the project path if you installed for every project.
