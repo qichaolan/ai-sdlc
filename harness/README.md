@@ -18,9 +18,11 @@ calls stay in the skills.
 | Router | [CLAUDE.md](CLAUDE.md) | Imports `AGENTS.md` and adds Claude Code notes. |
 | Enforcement | [.github/workflows/ci.yml](.github/workflows/ci.yml) | Lint, mypy, tests, the coverage gate, and OpenSpec validation on every push and pull request. |
 | Enforcement | [scripts/check_coverage.py](scripts/check_coverage.py) | Fails when branch or function coverage is under the threshold, per file or overall. Standard library only. |
-| Enforcement | [.claude/settings.json](.claude/settings.json) | Asks before pushes, merges, and deploys; blocks force-pushes, hard resets, service-account key creation, and reading `.env` or credential files. |
-| Sandbox | [.devcontainer/devcontainer.json](.devcontainer/devcontainer.json) | Python 3.12, uv, Node (for OpenSpec), and Claude Code in a container, so tests and builds run away from host credentials. |
+| Enforcement | [.claude/settings.json](.claude/settings.json) | Asks before pushes, merges, and deploys; blocks force-pushes (any argument order, `+refspec`), hard resets, service-account key creation, and reading `.env` or credential files. |
+| Sandbox | [scripts/test-offline.sh](scripts/test-offline.sh) | Runs tests and the coverage gate in Docker with no network, no Linux capabilities, a non-root user, CPU, memory, and process limits, and a timeout. Meets the sandbox rules in `python-development` and `python-testing`. |
+| Sandbox | [.devcontainer/devcontainer.json](.devcontainer/devcontainer.json) | Python 3.12, uv, Node (for OpenSpec), and Claude Code in a container with no Linux capabilities, no `sudo`, and CPU, memory, and process limits. The place to run the agent itself. |
 | Session start | [.claude/settings.json](.claude/settings.json) | Hook that prints `docs/PROGRESS.md` at startup, resume, clear, and compaction, so the handoff loads even if the `session-memory` skill isn't matched. |
+| Human gates | [.github/CODEOWNERS](.github/CODEOWNERS) | Requires the owner's review on specs, agent rules, the harness, and coverage settings. |
 | Human gates | [openspec/config.yaml](openspec/config.yaml) | Makes proposals flag changes that need owner approval and keeps deploy, push, and IAM steps out of task lists. |
 
 ## Set up a project
@@ -42,11 +44,12 @@ calls stay in the skills.
    workflow.
 
 2. Replace every `<placeholder>` in `AGENTS.md`,
-   `openspec/config.yaml`, and `.github/workflows/ci.yml`. Delete
-   sections that don't apply, such as OpenSpec. To find what's left:
+   `openspec/config.yaml`, `.github/workflows/ci.yml`, and
+   `.github/CODEOWNERS`. Delete sections that don't apply, such as
+   OpenSpec. To find what's left:
 
    ```bash
-   grep -rn '<[a-z]' AGENTS.md openspec/config.yaml .github/workflows/ci.yml
+   grep -rn '<[a-z]' AGENTS.md openspec/config.yaml .github/
    ```
 
 3. Add the dev tools and their settings to `pyproject.toml`. The
@@ -75,11 +78,15 @@ calls stay in the skills.
 4. If you use OpenSpec, run `openspec init` and pin its version in the
    `specs` CI job.
 
-5. Open the project in the devcontainer and start Claude Code there.
-   Ask it to "set up session memory" to create `docs/PROGRESS.md`.
+5. Open the project in the devcontainer and start Claude Code there,
+   or work on the host and run tests with `scripts/test-offline.sh`.
+   Ask the agent to "set up session memory" to create
+   `docs/PROGRESS.md`.
 
-6. On GitHub, protect `main`: require pull requests and make the CI
-   jobs required checks.
+6. On GitHub, protect `main`: require pull requests, make the CI jobs
+   required checks, and require review from code owners. If you add a
+   deploy workflow, run it in a GitHub environment with required
+   reviewers so every deploy waits for your approval.
 
 ## Daily workflow
 
@@ -91,18 +98,29 @@ calls stay in the skills.
   then `python-code-review`.
 - **Docs and UX:** `tech-doc-writer-reviewer` and
   `design-review-web-ux` before the review.
-- **Every session:** `session-memory` at the start and end; the hook
-  shows the handoff file either way.
+- **Every session:** `session-memory` at the start and end. The hook
+  only *reads* the handoff file; the agent must still *write* it before
+  stopping or before the context is compacted.
 
 ## Limits
 
-- **Permission rules match command prefixes.** They stop accidents,
-  not a determined workaround such as a script that pushes. Branch
+- **Permission rules match command text.** They stop accidents, not a
+  determined workaround such as a script or alias that pushes. Branch
   protection and required CI checks are the real backstop.
-- **The devcontainer has network access and only isolates what you
-  don't mount.** Don't forward cloud credentials or SSH agents into it.
-  For stricter isolation, run tests with `--network=none` after
-  `uv sync`.
+- **The session-start hook is Claude Code only.** Codex and other
+  agents rely on the `session-memory` line in `AGENTS.md`. Nothing
+  forces the handoff to be written before compaction.
+- **The devcontainer keeps network access,** so the agent can install
+  packages and reach APIs. Don't forward cloud credentials or SSH
+  agents into it. For network-free tests, run `scripts/test-offline.sh`
+  on the host. The Claude Code feature's optional firewall script needs
+  `sudo` and `NET_ADMIN`, which this hardening removes.
+- **`scripts/test-offline.sh` needs Docker** and a project path shared
+  with the Docker VM. Docker Desktop and Colima share your home folder
+  by default. The script picks the uv image from `.python-version`.
+- **CODEOWNERS can't gate a PR its owner opened.** GitHub doesn't allow
+  approving your own PR, so give agents a separate bot account if you
+  want this gate.
 - **The coverage gate needs function data in the JSON report.** It was
   tested with coverage.py 7.13 and exits with code 2 on a report
   without it.

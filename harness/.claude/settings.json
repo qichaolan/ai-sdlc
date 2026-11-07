@@ -17,8 +17,11 @@
       "Bash(helm install:*)"
     ],
     "deny": [
-      "Bash(git push --force:*)",
-      "Bash(git push -f:*)",
+      "Bash(git push --force*)",
+      "Bash(git push -f*)",
+      "Bash(git push * --force*)",
+      "Bash(git push * -f*)",
+      "Bash(git push * +*)",
       "Bash(git reset --hard:*)",
       "Bash(git clean -f:*)",
       "Bash(gcloud iam service-accounts keys create:*)",

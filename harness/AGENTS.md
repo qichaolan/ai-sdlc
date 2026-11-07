@@ -31,6 +31,7 @@ uv run mypy                                           # typecheck
 uv run pytest -q --cov --cov-branch \
   --cov-report=term-missing --cov-report=json         # tests + coverage
 uv run python scripts/check_coverage.py               # branch/function gate
+scripts/test-offline.sh                               # tests + gate, no network
 <build command, e.g. docker build -t <image>:local .> # build
 <smoke command against real services, if any>         # smoke test
 openspec validate --all --strict --no-interactive     # specs + changes
@@ -129,7 +130,9 @@ if any.
 
 - Tests, builds, and project commands run code: run them only in the
   devcontainer, a disposable sandbox, or CI, never with production
-  credentials.
+  credentials. On the host, run tests with `scripts/test-offline.sh`
+  (Docker, no network, resource limits); it meets the skills' sandbox
+  rules.
 - Never commit `.env`, keys, or service-account JSON. Never create
   service-account keys; deploy with Workload Identity Federation.
 - Never push, merge, force-push, or reset without explicit approval.

@@ -1,0 +1,23 @@
+# Paths that need the owner's review before merge. Replace <owner>
+# with a GitHub user or team, then turn on "Require review from Code
+# Owners" in the branch protection rule for main.
+#
+# GitHub doesn't let a PR's author approve it. If agents open PRs
+# under your own account, this can't be satisfied: use a separate bot
+# account for agents, or rely on required PRs and CI checks instead.
+
+# Required behavior
+/openspec/specs/            @<owner>
+/openspec/config.yaml       @<owner>
+
+# Agent rules and the harness
+/AGENTS.md                  @<owner>
+/CLAUDE.md                  @<owner>
+/.claude/                   @<owner>
+/.devcontainer/             @<owner>
+/.github/                   @<owner>
+/scripts/check_coverage.py  @<owner>
+/scripts/test-offline.sh    @<owner>
+
+# Coverage thresholds and tool settings
+/pyproject.toml             @<owner>

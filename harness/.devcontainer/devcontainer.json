@@ -5,6 +5,13 @@
     "ghcr.io/devcontainers/features/node:1": { "version": "22" },
     "ghcr.io/anthropics/devcontainer-features/claude-code:1": {}
   },
+  "runArgs": [
+    "--cpus=2",
+    "--memory=4g",
+    "--pids-limit=1024",
+    "--cap-drop=ALL",
+    "--security-opt=no-new-privileges"
+  ],
   "containerEnv": {
     "UV_LINK_MODE": "copy",
     "UV_PROJECT_ENVIRONMENT": "/home/vscode/.venv"
