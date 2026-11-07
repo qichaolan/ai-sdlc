@@ -1,8 +1,8 @@
 # ai-sdlc
 
-Agent skills for the software development lifecycle (Python development, design review, documentation, and spec-driven changes), for use with Claude Code, Codex, and similar coding agents.
+Agent skills for the software development lifecycle (Python development, design review, documentation, spec-driven changes, and session memory), for use with Claude Code, Codex, and similar coding agents.
 
-The skills fall into three groups. Within a group they are meant to be used in order, but each one also works on its own.
+The skills fall into four groups. Within a group they are meant to be used in order, but each one also works on its own.
 
 ## Python development
 
@@ -36,10 +36,18 @@ Standalone skills for UX and docs work. They can be used at any point in the lif
 | [design-review-web-ux](design-review-web-ux/SKILL.md) | Auditing or designing web UX: accessibility, responsive behavior, flows, forms, dashboards |
 | [tech-doc-writer-reviewer](tech-doc-writer-reviewer/SKILL.md) | Writing or reviewing READMEs, guides, API references, design docs, runbooks, release notes |
 
+## Session management
+
+Keeps work resumable across sessions and agents through a handoff file and the project's own docs. To set it up, ask the agent to set up session memory, then add the [AGENTS.md snippet](session-memory/references/agents-snippet.md). Skills load only when an agent matches them to the task, so the snippet tells agents to use this one at the start and end of every session.
+
+| Skill | Use it when |
+| --- | --- |
+| [session-memory](session-memory/SKILL.md) | Starting, resuming, or handing off work; keeping context small; recording decisions in the right doc |
+
 ## Installation
 
 Copy the skills into `.claude/skills/` in a project, or into `~/.claude/skills/` to use them everywhere:
 
 ```bash
-cp -r python-* design-review-web-ux tech-doc-writer-reviewer openspec-* .claude/skills/
+cp -r python-* design-review-web-ux tech-doc-writer-reviewer openspec-* session-memory .claude/skills/
 ```
