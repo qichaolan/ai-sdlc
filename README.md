@@ -4,6 +4,41 @@ Agent skills and a project harness for running the software development lifecycl
 
 **What it isn't:** a framework or a program you run. Everything here is Markdown instructions and configuration files that you copy into a project. The Python skills target uv, Ruff, mypy, pytest, GitHub Actions, and Google Cloud; the design, docs, OpenSpec, and session skills work with any stack.
 
+## New to coding? Start here
+
+You don't need to know how to code to try this. A coding agent is an AI assistant that reads and changes files on your computer while you describe what you want in everyday language. A skill is a written guide that shows the agent how to do one kind of job well, such as testing code. This repo is a collection of those guides.
+
+1. Install Claude Code by following the [official quickstart](https://code.claude.com/docs/en/quickstart). It needs a paid Claude plan or a Console account; the free plan doesn't include it.
+
+2. Open a terminal, the app where you type commands. Run these lines to download the skills and copy them to where Claude Code finds them. They work on macOS, Linux, and WSL on Windows. If `git` isn't found, [install Git](https://git-scm.com/downloads) first.
+
+   ```bash
+   git clone https://github.com/qichaolan/ai-sdlc.git
+   cd ai-sdlc
+   mkdir -p ~/.claude/skills
+   cp -r python-* design-review-web-ux tech-doc-writer-reviewer openspec-* session-memory ~/.claude/skills/
+   ```
+
+3. Make a practice folder and start Claude Code in it:
+
+   ```bash
+   mkdir ~/first-project
+   cd ~/first-project
+   claude
+   ```
+
+4. Say what you want in plain words, for example: "I'm new to coding. Help me build a small Python program that picks a random dinner idea. Explain each step in simple terms."
+
+A few habits help:
+
+- **Ask before you approve.** By default, Claude Code asks permission before it changes files or runs most commands. If you don't understand a request, ask "what does this do?" first.
+- **Practice in a new folder,** away from files you care about.
+- **Never paste passwords or keys** into the chat.
+- **Try the result yourself.** The agent can make mistakes.
+- **Ask about any word you don't know,** including words on this page.
+
+You can come back to the rest of this page later. Leave the harness until you're comfortable with Git and GitHub.
+
 ## How the pieces fit
 
 | Piece | What it is | Use it for |

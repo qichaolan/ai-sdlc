@@ -202,6 +202,7 @@ footer p { margin: 0; }
 <nav class="toc-side" aria-label="Contents">
   <p class="toc-title">Contents</p>
   <ul class="toc-list">
+    <li><a href="#new-to-coding">New to coding?</a></li>
     <li><a href="#how-the-pieces-fit">How the pieces fit</a></li>
     <li><a href="#before-you-begin">Before you begin</a></li>
     <li><a href="#quick-start-skills-only">Quick start: skills only</a></li>
@@ -231,6 +232,7 @@ footer p { margin: 0; }
 <details class="toc-small">
   <summary>Contents</summary>
   <ul class="toc-list">
+    <li><a href="#new-to-coding">New to coding?</a></li>
     <li><a href="#how-the-pieces-fit">How the pieces fit</a></li>
     <li><a href="#before-you-begin">Before you begin</a></li>
     <li><a href="#quick-start-skills-only">Quick start: skills only</a></li>
@@ -241,6 +243,41 @@ footer p { margin: 0; }
     <li><a href="#updating">Updating</a></li>
   </ul>
 </details>
+
+<section>
+  <h2 id="new-to-coding">New to coding? Start here</h2>
+  <p>You don’t need to know how to code to try this. A coding agent is an AI assistant that reads and changes files on your computer while you describe what you want in everyday language. A skill is a written guide that shows the agent how to do one kind of job well, such as testing code. This repo is a collection of those guides.</p>
+  <ol class="steps">
+    <li>
+      <p>Install Claude Code by following the <a href="https://code.claude.com/docs/en/quickstart">official quickstart</a>. It needs a paid Claude plan or a Console account; the free plan doesn’t include it.</p>
+    </li>
+    <li>
+      <p>Open a terminal, the app where you type commands. Run these lines to download the skills and copy them to where Claude Code finds them. They work on macOS, Linux, and WSL on Windows. If <code>git</code> isn’t found, <a href="https://git-scm.com/downloads">install Git</a> first.</p>
+      <div class="code"><pre data-name="Download and copy commands"><code>git clone https://github.com/qichaolan/ai-sdlc.git
+cd ai-sdlc
+mkdir -p ~/.claude/skills
+cp -r python-* design-review-web-ux tech-doc-writer-reviewer openspec-* session-memory ~/.claude/skills/</code></pre></div>
+    </li>
+    <li>
+      <p>Make a practice folder and start Claude Code in it:</p>
+      <div class="code"><pre data-name="Practice folder commands"><code>mkdir ~/first-project
+cd ~/first-project
+claude</code></pre></div>
+    </li>
+    <li>
+      <p>Say what you want in plain words, for example: “I’m new to coding. Help me build a small Python program that picks a random dinner idea. Explain each step in simple terms.”</p>
+    </li>
+  </ol>
+  <p>A few habits help:</p>
+  <ul>
+    <li><strong>Ask before you approve.</strong> By default, Claude Code asks permission before it changes files or runs most commands. If you don’t understand a request, ask “what does this do?” first.</li>
+    <li><strong>Practice in a new folder,</strong> away from files you care about.</li>
+    <li><strong>Never paste passwords or keys</strong> into the chat.</li>
+    <li><strong>Try the result yourself.</strong> The agent can make mistakes.</li>
+    <li><strong>Ask about any word you don’t know,</strong> including words on this page.</li>
+  </ul>
+  <p>You can come back to the rest of this page later. Leave the harness until you’re comfortable with Git and GitHub.</p>
+</section>
 
 <section>
   <h2 id="how-the-pieces-fit">How the pieces fit</h2>
