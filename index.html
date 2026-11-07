@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ai-sdlc</title>
+<meta name="description" content="Agent skills and a project harness for running the software development lifecycle with coding agents such as Claude Code and Codex.">
+<style>
+/* Layout: a quiet contents column beside one reading column. Neutrals plus one accent, one type family. */
+:root {
+  --paper: #fcfcfd;
+  --ink: #1d2126;
+  --muted: #5a636e;
+  --rule: #e2e5e9;
+  --wash: #f3f4f6;
+  --accent: #1f5ea6;
+  --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #16191d;
+    --ink: #e7e9ec;
+    --muted: #a0a8b3;
+    --rule: #2c3138;
+    --wash: #1f2329;
+    --accent: #8fbaf0;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --paper: #16191d;
+  --ink: #e7e9ec;
+  --muted: #a0a8b3;
+  --rule: #2c3138;
+  --wash: #1f2329;
+  --accent: #8fbaf0;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; scroll-padding-top: 2rem; }
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font: 400 1.0625rem/1.7 var(--font);
+}
+
+.skip {
+  position: absolute;
+  left: 1rem;
+  top: -4rem;
+  padding: 0.5rem 0.75rem;
+  background: var(--paper);
+  border: 1px solid var(--rule);
+  border-radius: 6px;
+}
+.skip:focus { top: 1rem; }
+
+.page {
+  display: grid;
+  grid-template-columns: 14rem minmax(0, 46rem);
+  gap: 5rem;
+  justify-content: center;
+  padding: 5rem 2rem 6rem;
+}
+
+/* Contents */
+.toc-side { position: sticky; top: 5rem; align-self: start; max-height: calc(100vh - 6rem); overflow-y: auto; font-size: 0.9375rem; line-height: 1.4; }
+.toc-title { margin: 0 0 1rem; color: var(--muted); font-size: 0.875rem; font-weight: 400; }
+.toc-list, .toc-list ul { display: grid; gap: 0.7rem; margin: 0; padding: 0; list-style: none; }
+.toc-list ul { margin-top: 0.7rem; padding-left: 0.875rem; font-size: 0.875rem; }
+.toc-list li, .toc-list li + li { margin: 0; padding: 0; }
+.toc-list a { color: var(--muted); text-decoration: none; }
+.toc-list a:hover { color: var(--ink); }
+.toc-list a[aria-current="true"] { color: var(--accent); font-weight: 600; }
+.toc-small { display: none; }
+
+/* Text */
+a { color: var(--accent); text-underline-offset: 0.18em; text-decoration-thickness: 1px; }
+a:focus-visible, button:focus-visible, summary:focus-visible, pre:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: 3px;
+}
+h1, h2, h3 { font-weight: 600; line-height: 1.25; text-wrap: balance; }
+h1 { margin: 0; font-size: 2.5rem; letter-spacing: -0.02em; }
+h2 { margin: 5rem 0 0; font-size: 1.625rem; letter-spacing: -0.01em; }
+h3 { margin: 3.5rem 0 0; font-size: 1.1875rem; }
+p, ul, ol { margin: 1.25rem 0 0; max-width: 65ch; }
+h2 + p, h3 + p { margin-top: 1rem; }
+ul, ol { padding-left: 1.5rem; }
+li { padding-left: 0.25rem; }
+li + li { margin-top: 0.75rem; }
+ol.steps > li + li { margin-top: 1.75rem; }
+li > p:first-child { margin-top: 0; }
+li > p { margin-top: 1rem; }
+li::marker { color: var(--muted); font-variant-numeric: tabular-nums; }
+
+.lead { margin-top: 1.5rem; font-size: 1.1875rem; line-height: 1.65; }
+.note { margin-top: 2rem; padding-left: 1.25rem; border-left: 2px solid var(--rule); color: var(--muted); }
+.note strong { color: var(--ink); }
+.source { margin-top: 1rem; font-size: 0.9375rem; }
+
+code { font-family: var(--mono); font-size: 0.875em; }
+:not(pre) > code { overflow-wrap: anywhere; }
+
+/* Commands */
+.code { position: relative; margin-top: 1rem; }
+pre {
+  margin: 0;
+  padding: 1.25rem 4.75rem 1.25rem 1.25rem;
+  overflow-x: auto;
+  border-radius: 8px;
+  background: var(--wash);
+  font-size: 0.9375rem;
+  line-height: 1.6;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+pre code { font-size: inherit; }
+pre.map { line-height: 1.45; padding-right: 1.25rem; white-space: pre; overflow-wrap: normal; }
+.c { color: var(--muted); }
+.copy {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  padding: 0.2rem 0.6rem;
+  border: 1px solid var(--rule);
+  border-radius: 5px;
+  background: var(--paper);
+  color: var(--muted);
+  font: 400 0.8125rem/1.5 var(--font);
+  cursor: pointer;
+}
+.copy:hover { color: var(--ink); }
+
+/* Tables */
+table { width: 100%; margin-top: 1.75rem; border-collapse: collapse; font-size: 1rem; line-height: 1.6; }
+th, td { padding: 1rem 1.5rem 1rem 0; border-bottom: 1px solid var(--rule); text-align: left; vertical-align: top; }
+th:last-child, td:last-child { padding-right: 0; }
+thead th { padding-top: 0; color: var(--muted); font-size: 0.875rem; font-weight: 400; }
+tbody th { font-weight: 600; }
+.skills tbody th { width: 40%; font-weight: 400; }
+.fit tbody th { width: 24%; }
+.flow tbody th { width: 24%; }
+.flow td:last-child { width: 26%; }
+td code, .skill { font-family: var(--mono); }
+.skill { font-size: 0.875em; white-space: nowrap; }
+
+footer { margin-top: 5rem; padding-top: 1.5rem; border-top: 1px solid var(--rule); color: var(--muted); font-size: 0.875rem; }
+footer p { margin: 0; }
+
+@media (max-width: 62rem) {
+  .page { display: block; max-width: 46rem; margin: 0 auto; padding: 3rem 1.5rem 4rem; }
+  .toc-side { display: none; }
+  .toc-small { display: block; margin-top: 2.5rem; padding: 1rem 0; border-block: 1px solid var(--rule); font-size: 0.9375rem; line-height: 1.4; }
+  .toc-small summary { color: var(--muted); cursor: pointer; }
+  .toc-small .toc-list { margin-top: 1.25rem; }
+  h2 { margin-top: 4rem; }
+  html { scroll-padding-top: 1.25rem; }
+}
+
+/* Phones: each table row becomes a labelled stack, so nothing scrolls sideways. */
+@media (max-width: 40rem) {
+  body { font-size: 1rem; }
+  .page { padding: 2.25rem 1.25rem 3rem; }
+  h1 { font-size: 2rem; }
+  h2 { font-size: 1.4375rem; }
+  .lead { font-size: 1.0625rem; }
+  pre { padding: 3rem 1.25rem 1.25rem; font-size: 0.8125rem; }
+  pre.map { padding-top: 1.25rem; }
+  table, tbody, tr, th, td { display: block; width: auto !important; }
+  thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+  tr { padding: 1.25rem 0; border-bottom: 1px solid var(--rule); }
+  tbody tr:first-child { padding-top: 0; }
+  tbody th, td { padding: 0; border: 0; }
+  td { margin-top: 0.75rem; }
+  td[data-label]::before { content: attr(data-label); display: block; color: var(--muted); font-size: 0.8125rem; }
+  .skill { white-space: normal; overflow-wrap: anywhere; }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html { scroll-behavior: smooth; }
+}
+
+@media print {
+  .toc-side, .toc-small, .copy, .skip { display: none; }
+  .page { display: block; padding: 0; }
+  h2, h3 { break-after: avoid; }
+  pre { padding-right: 1.25rem; }
+  tr, .code { break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<a class="skip" href="#content">Skip to content</a>
+<div class="page">
+
+<nav class="toc-side" aria-label="Contents">
+  <p class="toc-title">Contents</p>
+  <ul class="toc-list">
+    <li><a href="#how-the-pieces-fit">How the pieces fit</a></li>
+    <li><a href="#before-you-begin">Before you begin</a></li>
+    <li><a href="#quick-start-skills-only">Quick start: skills only</a></li>
+    <li><a href="#quick-start-full-harness">Quick start: full harness</a></li>
+    <li><a href="#daily-workflow">Daily workflow</a></li>
+    <li><a href="#skill-catalog">Skill catalog</a>
+      <ul>
+        <li><a href="#python-development">Python development</a></li>
+        <li><a href="#spec-driven-changes">Spec-driven changes</a></li>
+        <li><a href="#design-and-documentation">Design and documentation</a></li>
+        <li><a href="#session-management">Session management</a></li>
+      </ul>
+    </li>
+    <li><a href="#repo-map">Repo map</a></li>
+    <li><a href="#updating">Updating</a></li>
+  </ul>
+</nav>
+
+<main id="content">
+<header>
+  <h1>ai-sdlc</h1>
+  <p class="lead">Agent skills and a project harness for running the software development lifecycle with coding agents such as Claude Code and Codex. The skills cover Python development, spec-driven changes, design review, documentation, and session memory. The harness makes agents follow the same workflow, checks, and approval gates in every repo.</p>
+  <p class="note"><strong>What it isn’t:</strong> a framework or a program you run. Everything here is Markdown instructions and configuration files that you copy into a project. The Python skills target uv, Ruff, mypy, pytest, GitHub Actions, and Google Cloud; the design, docs, OpenSpec, and session skills work with any stack.</p>
+  <p class="source"><a href="https://github.com/qichaolan/ai-sdlc">View the repo on GitHub</a></p>
+</header>
+
+<details class="toc-small">
+  <summary>Contents</summary>
+  <ul class="toc-list">
+    <li><a href="#how-the-pieces-fit">How the pieces fit</a></li>
+    <li><a href="#before-you-begin">Before you begin</a></li>
+    <li><a href="#quick-start-skills-only">Quick start: skills only</a></li>
+    <li><a href="#quick-start-full-harness">Quick start: full harness</a></li>
+    <li><a href="#daily-workflow">Daily workflow</a></li>
+    <li><a href="#skill-catalog">Skill catalog</a></li>
+    <li><a href="#repo-map">Repo map</a></li>
+    <li><a href="#updating">Updating</a></li>
+  </ul>
+</details>
+
+<section>
+  <h2 id="how-the-pieces-fit">How the pieces fit</h2>
+  <table class="fit">
+    <thead><tr><th scope="col">Piece</th><th scope="col">What it is</th><th scope="col">Use it for</th></tr></thead>
+    <tbody>
+      <tr><th scope="row">Skills (<code>*/SKILL.md</code>)</th><td>Instructions an agent loads when a task matches, such as how to review a diff or write tests</td><td>Better results on each task</td></tr>
+      <tr><th scope="row">Harness (<a href="https://github.com/qichaolan/ai-sdlc/blob/main/harness/README.md">harness/</a>)</th><td><code>AGENTS.md</code> and <code>CLAUDE.md</code> templates, CI, permission rules, a session-start hook, a sandbox, and CODEOWNERS</td><td>Making the workflow repeatable and enforced in every project</td></tr>
+    </tbody>
+  </table>
+  <p>Skills are advice: an agent may skip one or not load it. The harness covers what must happen anyway. CI blocks merges that fail tests or coverage, permission rules stop force-pushes and unapproved deploys, and <code>AGENTS.md</code> tells the agent which skill to use for which task. Use skills on their own to try them out; add the harness when you want the same guarantees in every repo.</p>
+</section>
+
+<section>
+  <h2 id="before-you-begin">Before you begin</h2>
+  <ul>
+    <li>A coding agent that supports skills in the <code>SKILL.md</code> format. The commands below use Claude Code.</li>
+    <li><code>git</code>, plus <a href="https://docs.astral.sh/uv/">uv</a> for the Python skills.</li>
+    <li>For the OpenSpec skills: Node and the <a href="https://github.com/Fission-AI/OpenSpec">openspec</a> CLI.</li>
+    <li>For the harness sandbox: Docker. The devcontainer also needs an editor or CLI that supports dev containers.</li>
+  </ul>
+</section>
+
+<section>
+  <h2 id="quick-start-skills-only">Quick start: skills only</h2>
+  <ol class="steps">
+    <li>
+      <p>Clone the repo:</p>
+      <div class="code"><pre data-name="Clone commands"><code>git clone https://github.com/qichaolan/ai-sdlc.git
+cd ai-sdlc</code></pre></div>
+    </li>
+    <li>
+      <p>Copy the skills into one project, or into your user folder to use them everywhere:</p>
+      <div class="code"><pre data-name="Copy commands"><code><span class="c"># One project</span>
+mkdir -p /path/to/project/.claude/skills
+cp -r python-* design-review-web-ux tech-doc-writer-reviewer openspec-* session-memory /path/to/project/.claude/skills/
+
+<span class="c"># Every project</span>
+mkdir -p ~/.claude/skills
+cp -r python-* design-review-web-ux tech-doc-writer-reviewer openspec-* session-memory ~/.claude/skills/</code></pre></div>
+      <p>If a skill folder already exists, <code>cp -r</code> overwrites its files, including any local edits, but keeps files that no longer exist in this repo. To update cleanly, see <a href="#updating">Updating</a>.</p>
+    </li>
+    <li>
+      <p>Start a new Claude Code session in the project and ask it to list its skills. The skill names in the catalog below should appear.</p>
+    </li>
+    <li>
+      <p>Give it a task, for example “review the diff on this branch”. The agent picks the matching skill. To pick one yourself, name it in the prompt (“use python-code-review on this diff”) or type <code>/&lt;skill-name&gt;</code>.</p>
+    </li>
+  </ol>
+</section>
+
+<section>
+  <h2 id="quick-start-full-harness">Quick start: full harness</h2>
+  <p>Follow <a href="https://github.com/qichaolan/ai-sdlc/blob/main/harness/README.md">harness/README.md</a>. In short:</p>
+  <ol>
+    <li>Copy the harness files and the skills into the project root.</li>
+    <li>Fill in the <code>&lt;placeholders&gt;</code> in <code>AGENTS.md</code>, the CI workflow, <code>CODEOWNERS</code>, and, if you use OpenSpec, <code>openspec/config.yaml</code>.</li>
+    <li>Add the Ruff, mypy, and coverage settings to <code>pyproject.toml</code>.</li>
+    <li>Work inside the devcontainer, or run tests on the host with <code>scripts/test-offline.sh</code>.</li>
+    <li>Ask the agent to “set up session memory”.</li>
+    <li>On GitHub, protect <code>main</code> with required pull requests, required CI checks, and code-owner review.</li>
+  </ol>
+</section>
+
+<section>
+  <h2 id="daily-workflow">Daily workflow</h2>
+  <table class="flow">
+    <thead><tr><th scope="col">Task</th><th scope="col">Skills, in order</th><th scope="col">Your part</th></tr></thead>
+    <tbody>
+      <tr><th scope="row">New feature or behavior change</th><td><code>openspec-explore</code> → <code>openspec-propose</code> → <code>openspec-apply-change</code> (uses <code>python-development</code> and <code>python-testing</code>) → <code>python-code-review</code> → <code>openspec-archive-change</code></td><td>Approve the proposal before implementation starts; review the PR</td></tr>
+      <tr><th scope="row">Bug fix or refactor</th><td><code>python-development</code> → <code>python-testing</code> → <code>python-code-review</code></td><td>Review the PR</td></tr>
+      <tr><th scope="row">Release</th><td><code>python-release</code></td><td>Approve each deploy</td></tr>
+      <tr><th scope="row">Docs or UX change</th><td><code>tech-doc-writer-reviewer</code>, <code>design-review-web-ux</code></td><td>Review the findings</td></tr>
+      <tr><th scope="row">Any session</th><td><code>session-memory</code> at the start and end</td><td>Read the handoff in <code>docs/PROGRESS.md</code> when you return</td></tr>
+    </tbody>
+  </table>
+  <p>Tips:</p>
+  <ul>
+    <li><strong>Review in a fresh context.</strong> Run <code>python-code-review</code> in a new session or a subagent, not in the session that wrote the code.</li>
+    <li><strong>Put project rules in <code>AGENTS.md</code>, not in the skills.</strong> Rules in <code>AGENTS.md</code> override a skill when they conflict, so you can keep the skills identical across projects and update them by copying again.</li>
+    <li><strong>Name the skill when it matters.</strong> Matching is automatic but not guaranteed.</li>
+  </ul>
+</section>
+
+<section>
+  <h2 id="skill-catalog">Skill catalog</h2>
+  <p>The skills fall into four groups. Within a group they are meant to be used in order, but each one also works on its own.</p>
+
+  <h3 id="python-development">Python development</h3>
+  <p>Set up, build, test, review, and ship a Python project.</p>
+  <table class="skills">
+    <thead><tr><th scope="col">Skill</th><th scope="col">Use it when</th></tr></thead>
+    <tbody>
+      <tr><th scope="row"><a class="skill" href="https://github.com/qichaolan/ai-sdlc/blob/main/python-project-setup/SKILL.md">python-project-setup</a></th><td>Scaffolding or modernizing a project (uv, Ruff, mypy, pytest, GitHub Actions, GCP Cloud Run)</td></tr>
+      <tr><th scope="row"><a class="skill" href="https://github.com/qichaolan/ai-sdlc/blob/main/python-development/SKILL.md">python-development</a></th><td>Implementing, fixing, or refactoring code</td></tr>
+      <tr><th scope="row"><a class="skill" href="https://github.com/qichaolan/ai-sdlc/blob/main/python-testing/SKILL.md">python-testing</a></th><td>Writing, running, or debugging pytest tests with coverage</td></tr>
+      <tr><th scope="row"><a class="skill" href="https://github.com/qichaolan/ai-sdlc/blob/main/python-code-review/SKILL.md">python-code-review</a></th><td>Reviewing code, diffs, or pull requests</td></tr>
+      <tr><th scope="row"><a class="skill" href="https://github.com/qichaolan/ai-sdlc/blob/main/python-release/SKILL.md">python-release</a></th><td>Releasing a reviewed project to GKE or Cloud Run functions with gated, human-approved deploys</td></tr>
+    </tbody>
+  </table>
+
+  <h3 id="spec-driven-changes">Spec-driven changes (OpenSpec)</h3>
+  <p>Plan a change as written specs, implement it, then archive it. These skills require the <a href="https://github.com/Fission-AI/OpenSpec">openspec</a> CLI.</p>
+  <table class="skills">
+    <thead><tr><th scope="col">Skill</th><th scope="col">Use it when</th></tr></thead>
+    <tbody>
+      <tr><th scope="row"><a class="skill" href="https://github.com/qichaolan/ai-sdlc/blob/main/openspec-explore/SKILL.md">openspec-explore</a></th><td>Thinking through ideas or requirements before proposing a change</td></tr>
+      <tr><th scope="row"><a class="skill" href="https://github.com/qichaolan/ai-sdlc/blob/main/openspec-propose/SKILL.md">openspec-propose</a></th><td>Generating a full change proposal: design, specs, and tasks</td></tr>
+      <tr><th scope="row"><a class="skill" href="https://github.com/qichaolan/ai-sdlc/blob/main/openspec-apply-change/SKILL.md">openspec-apply-change</a></th><td>Implementing the tasks of an OpenSpec change</td></tr>
+      <tr><th scope="row"><a class="skill" href="https://github.com/qichaolan/ai-sdlc/blob/main/openspec-archive-change/SKILL.md">openspec-archive-change</a></th><td>Archiving a completed change</td></tr>
+    </tbody>
+  </table>
+
+  <h3 id="design-and-documentation">Design and documentation</h3>
+  <p>Standalone skills for UX and docs work. They can be used at any point in the lifecycle.</p>
+  <table class="skills">
+    <thead><tr><th scope="col">Skill</th><th scope="col">Use it when</th></tr></thead>
+    <tbody>
+      <tr><th scope="row"><a class="skill" href="https://github.com/qichaolan/ai-sdlc/blob/main/design-review-web-ux/SKILL.md">design-review-web-ux</a></th><td>Auditing or designing web UX: accessibility, responsive behavior, flows, forms, dashboards</td></tr>
+      <tr><th scope="row"><a class="skill" href="https://github.com/qichaolan/ai-sdlc/blob/main/tech-doc-writer-reviewer/SKILL.md">tech-doc-writer-reviewer</a></th><td>Writing or reviewing READMEs, guides, API references, design docs, runbooks, release notes</td></tr>
+    </tbody>
+  </table>
+
+  <h3 id="session-management">Session management</h3>
+  <p>Keeps work resumable across sessions and agents through a handoff file and the project’s own docs. Skills load only when an agent matches them to the task, so add the <a href="https://github.com/qichaolan/ai-sdlc/blob/main/session-memory/references/agents-snippet.md">AGENTS.md snippet</a> (already in the harness template) to make agents use this one at the start and end of every session.</p>
+  <table class="skills">
+    <thead><tr><th scope="col">Skill</th><th scope="col">Use it when</th></tr></thead>
+    <tbody>
+      <tr><th scope="row"><a class="skill" href="https://github.com/qichaolan/ai-sdlc/blob/main/session-memory/SKILL.md">session-memory</a></th><td>Starting, resuming, or handing off work; keeping context small; recording decisions in the right doc</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section>
+  <h2 id="repo-map">Repo map</h2>
+  <div class="code"><pre class="map" tabindex="0" role="region" aria-label="Repository layout"><code>ai-sdlc/
+├── python-*/                  <span class="c"># Python lifecycle skills</span>
+├── openspec-*/                <span class="c"># spec-driven change skills</span>
+├── design-review-web-ux/      <span class="c"># UX review skill, with reference files</span>
+├── tech-doc-writer-reviewer/  <span class="c"># documentation skill</span>
+├── session-memory/            <span class="c"># session handoff skill, with templates</span>
+└── harness/                   <span class="c"># project starter kit (see harness/README.md)</span></code></pre></div>
+</section>
+
+<section>
+  <h2 id="updating">Updating</h2>
+  <ol class="steps">
+    <li>
+      <p>If you changed a skill inside a project, move that change into the project’s <code>AGENTS.md</code> first. The next step deletes it.</p>
+    </li>
+    <li>
+      <p>Pull the repo, delete the old skill folders, and copy them again:</p>
+      <div class="code"><pre data-name="Update commands"><code>cd ai-sdlc &amp;&amp; git pull
+rm -rf /path/to/project/.claude/skills/{python-*,design-review-web-ux,tech-doc-writer-reviewer,openspec-*,session-memory}
+cp -r python-* design-review-web-ux tech-doc-writer-reviewer openspec-* session-memory /path/to/project/.claude/skills/</code></pre></div>
+      <p>Deleting first removes files that no longer exist in this repo. Use <code>~/.claude/skills</code> instead of the project path if you installed for every project.</p>
+    </li>
+  </ol>
+</section>
+
+<footer>
+  <p>Built from README.md in this repo.</p>
+</footer>
+</main>
+</div>
+
+<script>
+(function () {
+  // Keep table semantics and add labels for the stacked phone layout.
+  document.querySelectorAll('table').forEach(function (table) {
+    var heads = Array.prototype.map.call(table.querySelectorAll('thead th'), function (th) {
+      return th.textContent;
+    });
+    table.setAttribute('role', 'table');
+    table.querySelectorAll('tr').forEach(function (row) { row.setAttribute('role', 'row'); });
+    table.querySelectorAll('thead, tbody').forEach(function (group) { group.setAttribute('role', 'rowgroup'); });
+    table.querySelectorAll('thead th').forEach(function (th) { th.setAttribute('role', 'columnheader'); });
+    table.querySelectorAll('tbody tr').forEach(function (row) {
+      Array.prototype.forEach.call(row.children, function (cell, i) {
+        cell.setAttribute('role', i === 0 ? 'rowheader' : 'cell');
+        if (i > 0) { cell.setAttribute('data-label', heads[i]); }
+      });
+    });
+  });
+
+  // Copy buttons on commands. The repo map is a picture of folders, so it gets none.
+  document.querySelectorAll('.code pre:not(.map)').forEach(function (pre) {
+    var button = document.createElement('button');
+    var label = pre.getAttribute('data-name');
+    button.type = 'button';
+    button.className = 'copy';
+    button.textContent = 'Copy';
+    button.setAttribute('aria-label', 'Copy: ' + label);
+    button.addEventListener('click', function () {
+      var show = function (text) {
+        button.textContent = text;
+        setTimeout(function () { button.textContent = 'Copy'; }, 1800);
+      };
+      if (!navigator.clipboard) { show('Select to copy'); return; }
+      navigator.clipboard.writeText(pre.textContent).then(function () {
+        show('Copied');
+      }, function () {
+        show('Select to copy');
+      });
+    });
+    pre.parentNode.appendChild(button);
+  });
+
+  // Highlight the current section in the contents column.
+  var links = document.querySelectorAll('.toc-side a');
+  var byId = {};
+  links.forEach(function (link) { byId[link.getAttribute('href').slice(1)] = link; });
+  if ('IntersectionObserver' in window) {
+    var observer = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (!entry.isIntersecting) { return; }
+        links.forEach(function (link) { link.removeAttribute('aria-current'); });
+        byId[entry.target.id].setAttribute('aria-current', 'true');
+      });
+    }, { rootMargin: '0px 0px -80% 0px' });
+    Object.keys(byId).forEach(function (id) { observer.observe(document.getElementById(id)); });
+  }
+
+  // On small screens, close the contents after a jump so the section is in view.
+  var small = document.querySelector('.toc-small');
+  small.addEventListener('click', function (event) {
+    if (event.target.tagName === 'A') { small.open = false; }
+  });
+})();
+</script>
+</body>
+</html>
