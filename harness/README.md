@@ -49,7 +49,7 @@ calls stay in the skills.
    OpenSpec. To find what's left:
 
    ```bash
-   grep -rn '<[a-z]' AGENTS.md openspec/config.yaml .github/
+   grep -rn '<[A-Za-z]' AGENTS.md openspec/config.yaml .github/
    ```
 
 3. Add the dev tools and their settings to `pyproject.toml`. The
