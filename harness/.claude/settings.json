@@ -1,0 +1,44 @@
+{
+  "permissions": {
+    "ask": [
+      "Bash(git push:*)",
+      "Bash(git merge:*)",
+      "Bash(git rebase:*)",
+      "Bash(gh pr merge:*)",
+      "Bash(docker push:*)",
+      "Bash(gcloud run deploy:*)",
+      "Bash(gcloud run jobs deploy:*)",
+      "Bash(gcloud functions deploy:*)",
+      "Bash(gcloud scheduler:*)",
+      "Bash(gcloud projects add-iam-policy-binding:*)",
+      "Bash(kubectl apply:*)",
+      "Bash(kubectl delete:*)",
+      "Bash(helm upgrade:*)",
+      "Bash(helm install:*)"
+    ],
+    "deny": [
+      "Bash(git push --force:*)",
+      "Bash(git push -f:*)",
+      "Bash(git reset --hard:*)",
+      "Bash(git clean -f:*)",
+      "Bash(gcloud iam service-accounts keys create:*)",
+      "Read(./.env)",
+      "Read(./.env.*)",
+      "Read(./**/*service-account*.json)",
+      "Read(./**/*credentials*.json)"
+    ]
+  },
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "startup|resume|clear|compact",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "f=\"$CLAUDE_PROJECT_DIR/docs/PROGRESS.md\"; if [ -f \"$f\" ]; then echo '--- docs/PROGRESS.md (session handoff; verify against git before relying on it) ---'; cat \"$f\"; fi"
+          }
+        ]
+      }
+    ]
+  }
+}

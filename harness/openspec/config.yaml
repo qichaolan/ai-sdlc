@@ -1,0 +1,23 @@
+schema: spec-driven
+
+# Template from ai-sdlc/harness. Replace <placeholders> and add rules
+# specific to the project.
+context: |
+  <project>: <one line on what it does and how it runs>. Python, uv,
+  src/ layout. AGENTS.md is the source for workflow, Definition of Done,
+  standards, and safety rules; follow it. Specs in openspec/specs/
+  describe what the system does; they don't repeat AGENTS.md.
+
+rules:
+  proposal:
+    - Say whether the change touches a contract that needs owner approval (see AGENTS.md Standards); if it does, mark it.
+    - List changed settings, CLI flags, and output files, or say there are none.
+  specs:
+    - Use synthetic data only; never copy real or private values.
+    - Write scenarios as observable results (files, fields, report sections, UI content).
+  design:
+    - Record the options considered and why each rejected one lost.
+    - Name any cloud resource, IAM, or public-access change; these need deploy doc updates and owner approval.
+  tasks:
+    - End with a Definition of Done group from AGENTS.md (tests, coverage gate, docs and CHANGELOG, lint and mypy, build, one smoke run).
+    - Never add deploy, push, merge, or IAM steps as tasks; those need separate owner approval.

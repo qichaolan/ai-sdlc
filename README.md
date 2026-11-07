@@ -44,6 +44,10 @@ Keeps work resumable across sessions and agents through a handoff file and the p
 | --- | --- |
 | [session-memory](session-memory/SKILL.md) | Starting, resuming, or handing off work; keeping context small; recording decisions in the right doc |
 
+## Harness
+
+[harness/](harness/README.md) is a starter kit that wraps these skills for a Python project: an `AGENTS.md` router, CI with a branch and function coverage gate, Claude Code permission rules and a session-start hook, a devcontainer sandbox, and an OpenSpec config. Use it to get the same workflow in every repo.
+
 ## Installation
 
 Copy the skills into `.claude/skills/` in a project, or into `~/.claude/skills/` to use them everywhere:
